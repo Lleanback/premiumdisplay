@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <h1>Premium Hoon Media</h1>
+    <h1>Premium Display Media</h1>
   </header>
   <main id="gallery" class="gallery"></main>
 
@@ -35,9 +35,10 @@
       const assets = await fetchLightboxAssets();
       for (const asset of assets) {
         const imgUrl = await fetchTransformedUrl(asset.id);
+        if (!imgUrl) continue; // Skip if image URL is null
         const img = document.createElement('img');
         img.src = imgUrl;
-        img.alt = asset.originalFilename;
+        img.alt = asset.originalFilename || 'Image';
         img.loading = 'lazy';
         img.style.cursor = 'pointer';
         img.addEventListener('click', () => toggleFullscreen(img));
