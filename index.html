@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Display Media</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Premium Display Media</h1>
+  </header>
+  <main id="gallery" class="gallery"></main>
+
+  <script>
+    const API_URL = 'https://manukahealth.assetbank-server.com/assetbank-manukahealth/rest';
+    const LIGHTBOX_ID = '[YOUR_LIGHTBOX_ID]';
+    const USER_ID = '[YOUR_USER_ID]';
+
+    async function fetchLightboxAssets() {
+      const response = await fetch(`${API_URL}/users/${USER_ID}/lightboxes/${LIGHTBOX_ID}/contents`);
+      const data = await response.json();
+      return data.assets;
+    }
+
+    async function fetchTransformedUrl(assetId) {
+      const profile = 'web-image';
+      const response = await fetch(`${API_URL}/assets/${assetId}/conversion?profile=${profile}`);
+      const data = await response.json();
+      return data.url;
+    }
+
+    async function buildGallery() {
+      const gallery = document.getElementById('gallery');
+      const assets = await fetchLightboxAssets();
+      for (const asset of assets) {
+        const imgUrl = await fetchTransformedUrl(asset.id);
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.alt = asset.originalFilename;
+        img.loading = 'lazy';
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', () => toggleFullscreen(img));
+        gallery.appendChild(img);
+      }
+    }
+
+    function toggleFullscreen(element) {
+      if (!document.fullscreenElement) {
+        element.requestFullscreen().catch(err => console.error(err));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    buildGallery();
+  </script>
+</body>
+</html>
