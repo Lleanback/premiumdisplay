@@ -13,15 +13,22 @@
   <main id="gallery" class="gallery"></main>
 
   <script>
+    console.log("Script is running");
     const API_URL = 'https://manukahealth.assetbank-server.com/assetbank-manukahealth/rest';
     const LIGHTBOX_ID = '342';
     const USER_ID = '8';
 
     async function fetchLightboxAssets() {
-      const response = await fetch(`${API_URL}/users/${USER_ID}/lightboxes/${LIGHTBOX_ID}/contents`);
-      const data = await response.json();
-      return data.assets;
-    }
+  const response = await fetch(`${API_URL}/users/${USER_ID}/lightboxes/${LIGHTBOX_ID}/contents`);
+  const contentType = response.headers.get("content-type");
+  console.log("Content-Type:", contentType);
+  const data = await response.json().catch(err => {
+    console.error("Failed to parse JSON:", err);
+    return null;
+  });
+  console.log("Raw response data:", data);
+  return data?.assets || [];
+}
 
     async function fetchTransformedUrl(assetId) {
       const profile = 'web-image';
